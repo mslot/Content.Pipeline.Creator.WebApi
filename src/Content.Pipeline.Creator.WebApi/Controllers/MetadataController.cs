@@ -45,7 +45,7 @@ namespace Content.Pipeline.Creator.WebApi.Controllers
         }
 
         [Route("ping")]
-        [HttpPut]
+        [HttpGet]
         public async Task<IActionResult> Ping()
         {
             return Ok(new { Text = "Pong" });
