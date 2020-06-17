@@ -16,7 +16,7 @@ namespace Content.Pipeline.Creator.WebApi.Controllers
             _logger = logger;
         }
 
-        [Route("metadata/basic")]
+        [Route("basic")]
         [HttpPut]
         public async Task<IActionResult> BasicMetadataUpdate([FromBody] BasicMetadata basicMetadata)
         {
@@ -30,7 +30,7 @@ namespace Content.Pipeline.Creator.WebApi.Controllers
             return Ok();
         }
 
-        [Route("metadata/theme/{id}")]
+        [Route("theme/{id}")]
         [HttpPut]
         public async Task<IActionResult> ThemeUpdate([FromBody] Theme theme)
         {
