@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Content.Pipeline.Creator.Clients\Content.Pipeline.Creator.Clients.csproj" />
     <ProjectReference Include="..\Content.Pipeline.Creator.Core\Content.Pipeline.Creator.Core.csproj" />
   </ItemGroup>
 

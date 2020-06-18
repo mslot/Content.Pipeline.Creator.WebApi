@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Content.Pipeline.Creator.Clients.Interfaces;
 using Content.Pipeline.Creator.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,12 @@ namespace Content.Pipeline.Creator.WebApi.Controllers
     public class MetadataController : ControllerBase
     {
         private readonly ILogger<MetadataController> _logger;
+        private readonly IMessagingClient _messagingClient;
 
-        public MetadataController(ILogger<MetadataController> logger)
+        public MetadataController(ILogger<MetadataController> logger, IMessagingClient messagingClient)
         {
             _logger = logger;
+            _messagingClient = messagingClient;
         }
 
         [Route("basic")]
@@ -25,7 +28,7 @@ namespace Content.Pipeline.Creator.WebApi.Controllers
                 return BadRequest();
             }
 
-            await Task.CompletedTask;
+            await _messagingClient.SendMessageAsync(basicMetadata);
 
             return Ok();
         }

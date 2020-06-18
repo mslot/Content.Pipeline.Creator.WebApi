@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Content.Pipeline.Creator.Clients;
+using Content.Pipeline.Creator.Clients.Interfaces;
+using Content.Pipeline.Creator.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.ServiceBus.Management;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,10 +36,17 @@ namespace Content.Pipeline.Creator.WebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Creator API", Version = "v1" });
             });
+
+            var serviceBusOptions = new ServicebusOptions();
+            serviceBusOptions.TopicName = "metadata-topic";
+            Configuration.Bind("Servicebus", serviceBusOptions);
+
+            services.AddSingleton(serviceBusOptions);
+            services.AddTransient<IMessagingClient, ServicebusClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ServicebusOptions servicebusOptions)
         {
             app.UseSwagger();
 
@@ -59,6 +70,18 @@ namespace Content.Pipeline.Creator.WebApi
             {
                 endpoints.MapControllers();
             });
+
+            var managementClient = new ManagementClient(servicebusOptions.ConnectionString);
+
+            var existsTask = managementClient.TopicExistsAsync(servicebusOptions.TopicName);
+            var topicExists = existsTask.GetAwaiter().GetResult();
+
+            if (!topicExists)
+            {
+                var createTask = managementClient.CreateTopicAsync(servicebusOptions.TopicName);
+                createTask.GetAwaiter().GetResult();
+            }
+
         }
     }
 }
