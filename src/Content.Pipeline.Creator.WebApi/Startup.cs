@@ -70,18 +70,6 @@ namespace Content.Pipeline.Creator.WebApi
             {
                 endpoints.MapControllers();
             });
-
-            var managementClient = new ManagementClient(servicebusOptions.ConnectionString);
-
-            var existsTask = managementClient.TopicExistsAsync(servicebusOptions.TopicName);
-            var topicExists = existsTask.GetAwaiter().GetResult();
-
-            if (!topicExists)
-            {
-                var createTask = managementClient.CreateTopicAsync(servicebusOptions.TopicName);
-                createTask.GetAwaiter().GetResult();
-            }
-
         }
     }
 }
